@@ -1,6 +1,6 @@
 # Resources Plugin
 
-Resources is an (YPFramework)[https://github.com/yonpols/ypframework] plugin that
+Resources is an [YPFramework](https://github.com/yonpols/ypframework) plugin that
 allows you to serve static assets like images, stylesheets, javascripts and other
 binary resources in a controlled, cached and processed way.
 
