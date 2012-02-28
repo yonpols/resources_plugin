@@ -4,6 +4,13 @@
             if (!Resources\MainController::$minify_javascripts)
                 return $content;
 
+            require_once 'minify/JSMin.php';
+            return JSMin::minify($content);
+
+            /*
+             * This is to use UglifyJS. It needs node.js installed and UglifyJs installed with
+             * npm install -g uglifyjs
+             *
             $descriptorspec = array(
                0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
                1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
@@ -35,7 +42,7 @@
                     Logger::framework ('DEBUG:ERROR', $errors);
             }
 
-            return $content;
+            return $content;*/
         }
     }
 ?>

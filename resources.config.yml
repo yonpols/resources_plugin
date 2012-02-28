@@ -1,0 +1,35 @@
+resources:
+  #Mount point from your application's url where assets will be accessed.
+  #If you want your application.js file to be loaded and mount_point is
+  #'resources' then the URL for the asset will be ${app.url}/resources/application.js
+  mount_point: 'resources'
+
+  #Error to send along with the 404 code
+  not_found_error: 'Resource not Found'
+
+  #If set to true, resources will send cache headers to the browser
+  use_client_cache: true
+
+  #If set to true processed files will be cached using YPFramework cache.
+  #Files will be processed once and reprocessed only when it modification times
+  #are different
+  use_framework_cache: true
+
+  #Time of cache for images and other binary resources sent to the browser
+  #expressed in seconds
+  images_cache_time: 2592000
+
+  #Time of cache for javascripts sent to the browser expressed in seconds
+  javascripts_cache_time: 2592000
+
+  #Time of cache for stylesheets sent to the browser expressed in seconds
+  stylesheets_cache_time: 2592000
+
+  #It will use Miniy to minify javascripts.
+  minify_javascripts: true
+
+  #It will use Minify to minify stylesheets.
+  minify_stylesheets: true
+
+  #It will use Minify to minify html content
+  minify_html: true

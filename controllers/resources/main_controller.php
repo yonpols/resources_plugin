@@ -8,7 +8,6 @@
         public static $stylesheetsToInclude = array();
 
         //Options
-        public static $use_profiles = false;
         public static $not_found_error = 'Not Found';
         public static $use_client_cache = true;
         public static $use_framework_cache = true;
@@ -21,7 +20,6 @@
 
         public static function initialize() {
             if (\YPFramework::inProduction()) {
-                self::$use_profiles = \YPFramework::getSetting('resources.use_profiles', false);
                 self::$not_found_error = \YPFramework::getSetting('resources.not_found_error', 'Resource not Found');
                 self::$use_client_cache = \YPFramework::getSetting('resources.use_client_cache', true);
                 self::$use_framework_cache = \YPFramework::getSetting('resources.use_framework_cache', true);
@@ -32,7 +30,6 @@
                 self::$minify_stylesheets = \YPFramework::getSetting('resources.minify_stylesheets', true);
                 self::$minify_html = \YPFramework::getSetting('resources.minify_html', true);
             } else {
-                self::$use_profiles = \YPFramework::getSetting('resources.use_profiles', false);
                 self::$not_found_error = \YPFramework::getSetting('resources.not_found_error', 'Resource not Found');
                 self::$use_client_cache = \YPFramework::getSetting('resources.use_client_cache', false);
                 self::$use_framework_cache = \YPFramework::getSetting('resources.use_framework_cache', true);
