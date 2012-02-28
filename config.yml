@@ -1,0 +1,4 @@
+package:
+  type: plugin
+  name: resources
+  version: '0.1.0'
