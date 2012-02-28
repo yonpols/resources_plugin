@@ -2,10 +2,11 @@
     namespace Resources;
 
     class ResourcesProcessor {
-        private $inserted_files;
+        private $insertedFiles;
         private $contentType = null;
         private $content;
-        private $file;
+        private $fileName;
+        private $isFile = false;
 
         public function __construct($resourcePath) {
             $pos = strrpos($resourcePath, '.');
@@ -25,17 +26,20 @@
             $filePath = \YPFramework::getComponentPath($resourcePath, $prefixPath);
 
             if (is_file($filePath)) {
+                $this->fileName = $filePath;
+
                 if ($this->contentType) {
                     $filePath = realpath($filePath);
-                    $this->inserted_files = array($filePath => true);
+                    $this->insertedFiles = array($filePath => true);
 
-                    $content = $this->processResource($filePath, $prefixPath, ($ext == 'js'? ';': ''));
+                    $content = $this->processTextualResource($filePath, $prefixPath, ($ext == 'js'? ';': ''));
                     \YPFContentFilter::processContent($filePath, $content);
 
                     $this->content = $content;
                 } else {
                     $this->contentType = \Mime::getMimeFromFile($filePath);
-                    $this->file = $filePath;
+                    $this->isFile = true;
+                    $this->fileName = $this->processBinaryResource($this->fileName);
                 }
             }
         }
@@ -49,10 +53,14 @@
         }
 
         public function getFileName() {
-            return $this->file;
+            return $this->fileName;
         }
 
-        private function processResource($fileName, $prefixPath, $joiner = '') {
+        public function isFile() {
+            return $this->isFile;
+        }
+
+        private function processTextualResource($fileName, $prefixPath, $joiner = '') {
             if (MainController::$use_framework_cache)
                 $content = \YPFCache::fileBased($fileName, null, false);
             else
@@ -60,7 +68,6 @@
 
             if (!$content) {
                 $content = file_get_contents($fileName);
-                \YPFContentFilter::processContent($fileName, $content);
 
                 if (preg_match('/^\\/\\*((?m:.*?))\\*\\//xs', $content, $matches, PREG_OFFSET_CAPTURE)) {
                     $inserted_content = '';
@@ -78,10 +85,10 @@
                                         throw new \ErrorComponentNotFound('resource', $match[2]);
 
                                     $path = realpath($path);
-                                    if (!isset ($this->inserted_files[$path])) {
+                                    if (!isset ($this->insertedFiles[$path])) {
                                         \Logger::framework('DEBUG:RESOURCES', sprintf('%s %s', $command, $path));
-                                        $this->inserted_files[$path] = true;
-                                        $inserted_content .= $joiner.$this->processResource($path, $prefixPath);
+                                        $this->insertedFiles[$path] = true;
+                                        $inserted_content .= $joiner.$this->processTextualResource($path, $prefixPath);
                                     }
                                     break;
 
@@ -96,10 +103,10 @@
                                         $path = realpath($path);
                                         if (!is_file($path)) continue;
 
-                                        if (!isset ($this->inserted_files[$path])) {
+                                        if (!isset ($this->insertedFiles[$path])) {
                                             \Logger::framework('DEBUG:RESOURCES', sprintf('%s %s', $command, $path));
-                                            $this->inserted_files[$path] = true;
-                                            $inserted_content .= $joiner.$this->processResource($path, $prefixPath);
+                                            $this->insertedFiles[$path] = true;
+                                            $inserted_content .= $joiner.$this->processTextualResource($path, $prefixPath);
                                         }
                                     }
                                     break;
@@ -112,10 +119,43 @@
                     $content = $pre_content.$inserted_content.$joiner.$post_content;
                 }
 
+                \YPFContentFilter::processContent($fileName, $content);
+
                 if (MainController::$use_framework_cache)
                     \YPFCache::fileBased($fileName, $content, false);
             }
             return $content;
+        }
+
+        private function processBinaryResource($fileName) {
+            $extension = strtolower(substr($fileName, strrpos($fileName, '.')));
+
+            if (array_search($extension, array('.png', '.jpg', '.jpeg')) === false)
+                return $fileName;
+
+            if (MainController::$use_framework_cache)
+                $newFileName = \YPFCache::entireFile ($fileName);
+            else
+                $newFileName = false;
+
+            if (!$newFileName) {
+                if (class_exists('Imagick', false)) {
+                    $image = new \Imagick($fileName);
+                    $image->stripImage();
+
+                    $image->setCompressionQuality(75);
+
+                    $tmp_file = tempnam(\YPFramework::getPaths()->tmp, 'resource');
+                    file_put_contents($tmp_file, $image->getImageBlob());
+
+                    $newFileName = \YPFCache::entireFile($fileName, $tmp_file);
+
+                    @unlink($tmp_file);
+                } else
+                    $newFileName = $fileName;
+            }
+
+            return $newFileName;
         }
     }
 

@@ -35,7 +35,7 @@
                 if (is_dir($destination))
                     $destination = YPFramework::getFileName ($destination, basename($resource));
 
-                if ($processor->getFileName())
+                if ($processor->isFile())
                     $result = copy ($processor->getFileName (), $destination);
                 else
                     $result = file_put_contents ($destination, $processor->getContent ());

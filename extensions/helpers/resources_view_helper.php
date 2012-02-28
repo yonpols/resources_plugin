@@ -22,4 +22,10 @@
         return sprintf('%s/%s/%s', YPFramework::getSetting('application.url'),
             Resources\MainController::$mountPoint, $resourceName);
     }
+
+    if (!function_exists('http_date')) {
+        function http_date($time) {
+            return gmdate(DATE_RFC1123, $time);
+        }
+    }
 ?>
