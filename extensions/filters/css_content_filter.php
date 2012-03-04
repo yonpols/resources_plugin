@@ -4,7 +4,7 @@
             if (!Resources\MainController::$minify_stylesheets)
                 return $content;
 
-            require_once 'minify/Minify/CSS.php';
+            require_once 'minify_css/CSS.php';
             return Minify_CSS::minify($content);
         }
     }

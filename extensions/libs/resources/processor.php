@@ -1,7 +1,7 @@
 <?php
     namespace Resources;
 
-    class ResourcesProcessor {
+    class Processor {
         private $insertedFiles;
         private $contentType = null;
         private $content;
@@ -151,11 +151,10 @@
                     $newFileName = \YPFCache::entireFile($fileName, $tmp_file);
 
                     @unlink($tmp_file);
-                } else
-                    $newFileName = $fileName;
+                }
             }
 
-            return $newFileName;
+            return $newFileName? $newFileName: $fileName;
         }
     }
 

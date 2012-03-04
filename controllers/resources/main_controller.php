@@ -43,10 +43,10 @@
         }
 
         public function get() {
-            include 'resources_processor.php';
+            include 'resources/processor.php';
 
             $resourcePath = $this->params['path'];
-            $processor = new ResourcesProcessor($resourcePath);
+            $processor = new Processor($resourcePath);
 
             $response = new \YPFResponse($this->application, $this, 'get');
 
@@ -54,15 +54,14 @@
                 $response->header('Content-Type', $contentType);
                 if (!self::$use_client_cache)
                     $response->header ('Expires', http_date (time()-self::$images_cache_time));
-                    //$response->header('Cache-Control', 'no-cache');
                 else {
 
                     if ($contentType=='text/css') {
                         $cache_time = self::$stylesheets_cache_time;
-                        $response->hader('Vary', 'Accept-Encoding');
+                        $response->header('Vary', 'Accept-Encoding');
                     } elseif ($contentType=='text/javascript') {
                         $cache_time = self::$javascripts_cache_time;
-                        $response->hader('Vary', 'Accept-Encoding');
+                        $response->header('Vary', 'Accept-Encoding');
                     } else
                         $cache_time = self::$images_cache_time;
 

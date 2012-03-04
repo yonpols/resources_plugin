@@ -28,6 +28,9 @@ resources:
   #It will use Miniy to minify javascripts.
   minify_javascripts: true
 
+  #It'll use uglifier instead of JSMin. To use it you need node.js and uglifyjs package
+  use_uglifier: false
+
   #It will use Minify to minify stylesheets.
   minify_stylesheets: true
 

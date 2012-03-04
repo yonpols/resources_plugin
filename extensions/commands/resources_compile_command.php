@@ -1,11 +1,17 @@
 <?php
     class ResourcesCompileCommand extends YPFCommand {
         public function getDescription() {
-            return '';
+            return 'compiles a resource to avoid processing of files at the web server';
         }
 
         public function help($parameters) {
-            ;
+            echo "ypf resources.compile resource-name [compiled-file]\n".
+                 "Compiles a resource to avoid processing of files at the web server\n".
+                 "   resource-name:    name of the resource as it would be called in resource_tag\n".
+                 "   compiled-file:    (optional) path of the file compiled. If none specified\n".
+                 "                     it will be placed under {WWW_PATH}/resources/\n";
+
+            return YPFCommand::RESULT_OK;
         }
 
         public function run($parameters) {
@@ -18,10 +24,13 @@
                 $this->exitNow(YPFCommand::RESULT_INVALID_PARAMETERS);
             }
 
-            include 'resources_processor.php';
+            include 'resources/processor.php';
+            Resources\MainController::$minify_stylesheets = true;
+            Resources\MainController::$minify_javascripts = true;
+
             $resource = $parameters[0];
 
-            $processor = new Resources\ResourcesProcessor($resource);
+            $processor = new Resources\Processor($resource);
 
             if ($processor->getContentType()) {
                 if (count($parameters) > 1)

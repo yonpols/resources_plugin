@@ -4,26 +4,36 @@
             if (!Resources\MainController::$minify_javascripts)
                 return $content;
 
-            require_once 'minify/JSMin.php';
-            return JSMin::minify($content);
+            if (YPFramework::getSetting('resources.use_uglify', false)) {
+                if ($this->uglify($content))
+                    return $content;
+            }
 
-            /*
-             * This is to use UglifyJS. It needs node.js installed and UglifyJs installed with
-             * npm install -g uglifyjs
-             *
+            $this->jsmin($content);
+            return $content;
+        }
+
+        protected function jsmin(&$content) {
+            require_once 'minify_css/JSMin.php';
+            $content = JSMin::minify($content);
+            return true;
+        }
+
+        /*
+         * This is to use UglifyJS. It needs node.js installed and UglifyJs installed with
+         * npm install -g uglifyjs
+         *
+         */
+        protected function uglify(&$content) {
             $descriptorspec = array(
-               0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-               1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-               2 => array("pipe", "w"),
+               0 => array("pipe", "r"),  // stdin
+               1 => array("pipe", "w"),  // stdout
+               2 => array("pipe", "w"),  // stderr
             );
 
             $process = proc_open('uglifyjs', $descriptorspec, $pipes);
 
             if (is_resource($process)) {
-                // $pipes now looks like this:
-                // 0 => writeable handle connected to child stdin
-                // 1 => readable handle connected to child stdout
-
                 fwrite($pipes[0], $content);
                 fclose($pipes[0]);
 
@@ -32,17 +42,16 @@
                 fclose($pipes[1]);
                 fclose($pipes[2]);
 
-                // It is important that you close any pipes before calling
-                // proc_close in order to avoid a deadlock
                 $return_value = proc_close($process);
 
-                if (!$return_value)
-                    return $new_content;
-                else
+                if (!$return_value) {
+                    $content = $new_content;
+                    return true;
+                } else
                     Logger::framework ('DEBUG:ERROR', $errors);
             }
 
-            return $content;*/
+            return false;
         }
     }
 ?>

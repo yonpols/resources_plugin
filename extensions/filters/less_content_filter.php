@@ -2,9 +2,9 @@
     class LessContentFilter extends YPFContentFilter {
         protected function process($content) {
             $descriptorspec = array(
-               0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-               1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-               2 => array("pipe", "w"),
+               0 => array("pipe", "r"),  // stdin
+               1 => array("pipe", "w"),  // stdout
+               2 => array("pipe", "w"),  // stderr
             );
 
             $tmp_input = tempnam(YPFramework::getPaths()->tmp, 'less_input');
