@@ -1,4 +1,7 @@
 resources:
+  #If set to true, resources will be served dinamically by this plugin. True by default.
+  active: true
+  
   #Mount point from your application's url where assets will be accessed.
   #If you want your application.js file to be loaded and mount_point is
   #'resources' then the URL for the asset will be ${app.url}/resources/application.js
